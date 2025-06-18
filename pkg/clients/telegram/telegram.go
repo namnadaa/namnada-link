@@ -17,14 +17,16 @@ const (
 
 // Client represents a Telegram Bot API client.
 type Client struct {
+	scheme   string
 	host     string
 	basePath string
 	client   http.Client
 }
 
 // NewClient creates a new Telegram Bot API client with the given host and token.
-func NewClient(host, token string) Client {
+func NewClient(scheme, host, token string) Client {
 	return Client{
+		scheme:   scheme,
 		host:     host,
 		basePath: newBasePath(token),
 		client:   http.Client{},
@@ -78,7 +80,7 @@ func (c *Client) SendMessage(chatID int, text string) error {
 // doRequest performs an HTTP GET request to the Telegram API using the given method and query parameters.
 func (c *Client) doRequest(method string, query url.Values) ([]byte, error) {
 	u := url.URL{
-		Scheme: "https",
+		Scheme: c.scheme,
 		Host:   c.host,
 		Path:   path.Join(c.basePath, method),
 	}
