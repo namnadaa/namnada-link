@@ -24,8 +24,8 @@ type Client struct {
 }
 
 // NewClient creates a new Telegram Bot API client with the given host and token.
-func NewClient(scheme, host, token string) Client {
-	return Client{
+func NewClient(scheme, host, token string) *Client {
+	return &Client{
 		scheme:   scheme,
 		host:     host,
 		basePath: newBasePath(token),
