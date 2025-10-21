@@ -7,11 +7,11 @@ import (
 	"sync"
 )
 
-// ErrNoUnreadPages is returned when there are no unread pages for the user.
-var ErrNoUnreadPages = errors.New("no unread pages")
-
-// ErrNoPagesFound is returned when a page is not found for the user.
-var ErrNoPagesFound = errors.New("page not found")
+var (
+	ErrNoUnreadPages = errors.New("no unread pages")
+	ErrNoPagesFound  = errors.New("page not found")
+	ErrNilPage       = errors.New("page is nil")
+)
 
 // Storage is an in-memory implementation of Storage interface.
 type Storage struct {
@@ -30,6 +30,10 @@ func New() *Storage {
 func (s *Storage) Save(p *storage.Page) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
+	if p == nil {
+		return ErrNilPage
+	}
 
 	for _, page := range s.pages[p.UserName] {
 		if page.URL == p.URL {
@@ -66,6 +70,10 @@ func (s *Storage) MarkAsRead(p *storage.Page) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	if p == nil {
+		return ErrNilPage
+	}
+
 	for _, page := range s.pages[p.UserName] {
 		if page.URL == p.URL {
 			page.Read = true
@@ -80,6 +88,10 @@ func (s *Storage) IsExists(p *storage.Page) (bool, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
+	if p == nil {
+		return false, ErrNilPage
+	}
+
 	for _, page := range s.pages[p.UserName] {
 		if page.URL == p.URL {
 			return true, nil
@@ -92,6 +104,10 @@ func (s *Storage) IsExists(p *storage.Page) (bool, error) {
 func (s *Storage) Remove(p *storage.Page) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
+	if p == nil {
+		return ErrNilPage
+	}
 
 	pages := s.pages[p.UserName]
 	for i, page := range pages {
