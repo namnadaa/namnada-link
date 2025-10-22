@@ -4,8 +4,14 @@ import (
 	"URLbot/pkg/clients/telegram"
 	"URLbot/pkg/events"
 	"URLbot/pkg/storage"
+	"errors"
 	"fmt"
 	"log/slog"
+)
+
+var (
+	ErrUnknownEventType = errors.New("unknown event type")
+	ErrCantGetMeta      = errors.New("can not get meta")
 )
 
 // Processor implements Fetcher interface for receiving Telegram updates
@@ -50,6 +56,42 @@ func (p *Processor) Fetch(limit int) ([]events.Event, error) {
 	}
 
 	p.offset = updates[len(updates)-1].ID + 1
+
+	return res, nil
+}
+
+// Process handles a single event by delegating to the appropriate handler
+// based on the event type. Currently supports only Message events.
+func (p *Processor) Process(event events.Event) error {
+	switch event.Type {
+	case events.Message:
+		return p.processMessage(event)
+	default:
+		return ErrUnknownEventType
+	}
+}
+
+// processMessage extracts metadata from the event and processes the message command.
+func (p *Processor) processMessage(event events.Event) error {
+	meta, err := meta(event)
+	if err != nil {
+		return fmt.Errorf("failed to procces message: %v", err)
+	}
+
+	err = p.doCmd(event.Text, meta.UserName, meta.ChatID)
+	if err != nil {
+		return fmt.Errorf("failed to procces message: %v", err)
+	}
+
+	return nil
+}
+
+// meta extracts Meta information from the event and validates its type.
+func meta(event events.Event) (Meta, error) {
+	res, ok := event.Meta.(Meta)
+	if !ok {
+		return Meta{}, ErrCantGetMeta
+	}
 
 	return res, nil
 }
