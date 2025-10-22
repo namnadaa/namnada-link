@@ -7,10 +7,7 @@ import (
 	"sync"
 )
 
-var (
-	ErrNoPagesFound = errors.New("page not found")
-	ErrNilPage      = errors.New("page is nil")
-)
+var ErrNilPage = errors.New("page is nil")
 
 // Storage is an in-memory implementation of Storage interface.
 type Storage struct {
@@ -58,7 +55,7 @@ func (s *Storage) GetRandomUnread(userName string) (*storage.Page, error) {
 	}
 
 	if len(unread) == 0 {
-		return nil, storage.ErrNoUnreadPages
+		return nil, storage.ErrNoPagesFound
 	}
 
 	return unread[rand.Intn(len(unread))], nil
@@ -79,7 +76,7 @@ func (s *Storage) MarkAsRead(p *storage.Page) error {
 			return nil
 		}
 	}
-	return ErrNoPagesFound
+	return storage.ErrNoPagesFound
 }
 
 // IsExists checks whether a page is already stored.
@@ -115,5 +112,17 @@ func (s *Storage) Remove(p *storage.Page) error {
 			return nil
 		}
 	}
-	return ErrNoPagesFound
+	return storage.ErrNoPagesFound
+}
+
+// List returns all pages saved by the specified user.
+func (s *Storage) List(userName string) ([]*storage.Page, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	pages := s.pages[userName]
+	if len(pages) == 0 {
+		return nil, storage.ErrNoPagesFound
+	}
+	return pages, nil
 }

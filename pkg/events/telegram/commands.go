@@ -15,6 +15,7 @@ const (
 	RndCmd   = "/random" // Sends a random unread page.
 	ReadCmd  = "/read"   // Marks a page as read.
 	RmvCmd   = "/remove" // Removes a saved page.
+	ListCmd  = "/list"   // Show all saved pages.
 	HelpCmd  = "/help"   // Displays help information.
 )
 
@@ -47,6 +48,8 @@ func (p *Processor) doCmd(text, username string, chatID int) error {
 			return p.client.SendMessage(chatID, msgURLRequired)
 		}
 		return p.removePage(arg, username, chatID)
+	case ListCmd:
+		return p.sendList(username, chatID)
 	case HelpCmd:
 		return p.sendHelp(chatID)
 	default:
@@ -94,8 +97,8 @@ func (p *Processor) sendHello(chatID int) error {
 func (p *Processor) sendRandom(username string, chatID int) error {
 	page, err := p.storage.GetRandomUnread(username)
 	if err != nil {
-		if errors.Is(err, storage.ErrNoUnreadPages) {
-			return p.client.SendMessage(chatID, msgNoUnreadPages)
+		if errors.Is(err, storage.ErrNoPagesFound) {
+			return p.client.SendMessage(chatID, msgNoSavedPages)
 		}
 
 		return fmt.Errorf("failed to get random unread page: %v", err)
@@ -144,6 +147,37 @@ func (p *Processor) removePage(pageURL, username string, chatID int) error {
 	}
 
 	err = p.client.SendMessage(chatID, msgRemoved)
+	if err != nil {
+		return fmt.Errorf("failed to send message: %v", err)
+	}
+
+	return nil
+}
+
+// sendList retrieves and sends the full list of saved pages for the user.
+// Each page is shown with a [ ] or [x] prefix indicating unread or read status.
+func (p *Processor) sendList(username string, chatID int) error {
+	pages, err := p.storage.List(username)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoPagesFound) {
+			return p.client.SendMessage(chatID, msgNoSavedPages)
+		}
+
+		return fmt.Errorf("failed to fetch pages list: %v", err)
+	}
+
+	var builder strings.Builder
+	builder.WriteString("Your saved pages:\n\n")
+
+	for i, page := range pages {
+		status := "[ ]"
+		if page.Read {
+			status = "[x]"
+		}
+		fmt.Fprintf(&builder, "%d. %s %s\n", i+1, status, page.URL)
+	}
+
+	err = p.client.SendMessage(chatID, builder.String())
 	if err != nil {
 		return fmt.Errorf("failed to send message: %v", err)
 	}

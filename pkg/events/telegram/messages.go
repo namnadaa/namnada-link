@@ -8,6 +8,7 @@ Here’s what I can do:
 /random — send you random unread pages
 /read — mark page as read
 /remove — delete page
+/list — show all saved pages
 /help — show this help message
 
 You can also just send me a link, and I'll save it for you automatically.`
@@ -16,7 +17,7 @@ const msgHello = "Hi there! \n\n" + msgHelp
 
 const (
 	msgSaved          = "Saved!"
-	msgNoUnreadPages  = "You have no unread pages"
+	msgNoSavedPages   = "You have no saved pages"
 	msgAlreadyExists  = "You already have this page in your list"
 	msgMarkedAsRead   = "Marked as read!"
 	msgRemoved        = "Page removed!"

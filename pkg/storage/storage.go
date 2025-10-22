@@ -2,7 +2,7 @@ package storage
 
 import "errors"
 
-var ErrNoUnreadPages = errors.New("no unread pages")
+var ErrNoPagesFound = errors.New("page not found")
 
 // Storage is an interface for saving, retrieving, and managing user pages.
 type Storage interface {
@@ -11,6 +11,7 @@ type Storage interface {
 	MarkAsRead(p *Page) error
 	IsExists(p *Page) (bool, error)
 	Remove(p *Page) error
+	List(userName string) ([]*Page, error)
 }
 
 // Page represents a user-saved link with its read status.
