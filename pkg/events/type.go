@@ -7,7 +7,7 @@ type Fetcher interface {
 
 // Processor is an interface for processing a single event.
 type Processor interface {
-	Process(e Event) error
+	Process(event Event) error
 }
 
 // Type represents the type of an event.

@@ -1,5 +1,9 @@
 package storage
 
+import "errors"
+
+var ErrNoUnreadPages = errors.New("no unread pages")
+
 // Storage is an interface for saving, retrieving, and managing user pages.
 type Storage interface {
 	Save(p *Page) error

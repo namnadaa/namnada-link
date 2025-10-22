@@ -8,9 +8,8 @@ import (
 )
 
 var (
-	ErrNoUnreadPages = errors.New("no unread pages")
-	ErrNoPagesFound  = errors.New("page not found")
-	ErrNilPage       = errors.New("page is nil")
+	ErrNoPagesFound = errors.New("page not found")
+	ErrNilPage      = errors.New("page is nil")
 )
 
 // Storage is an in-memory implementation of Storage interface.
@@ -59,7 +58,7 @@ func (s *Storage) GetRandomUnread(userName string) (*storage.Page, error) {
 	}
 
 	if len(unread) == 0 {
-		return nil, ErrNoUnreadPages
+		return nil, storage.ErrNoUnreadPages
 	}
 
 	return unread[rand.Intn(len(unread))], nil
