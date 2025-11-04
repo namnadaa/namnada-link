@@ -112,3 +112,60 @@ func TestProcessor_Fetch(t *testing.T) {
 		})
 	}
 }
+
+func TestProcessor_Process(t *testing.T) {
+	tests := []struct {
+		name    string
+		client  *mockTelegramClient
+		event   events.Event
+		wantErr bool
+	}{
+		{
+			name: "valid message type",
+			client: &mockTelegramClient{
+				updates: []telegram.Update{
+					{
+						ID: 1,
+						Message: &telegram.Message{
+							Text: "test 1",
+							From: telegram.From{Username: "User 1"},
+							Chat: telegram.Chat{ID: 10},
+						},
+					},
+				},
+			},
+			event: events.Event{
+				Type: events.Message,
+				Text: "test 1",
+				Meta: tg.Meta{
+					ChatID:   10,
+					UserName: "User 1",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "unknown event type",
+			client: &mockTelegramClient{
+				updates: []telegram.Update{},
+			},
+			event:   events.Event{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := tg.New(tt.client, nil)
+			gotErr := p.Process(tt.event)
+			if gotErr != nil {
+				if !tt.wantErr {
+					t.Errorf("Process() failed: %v", gotErr)
+				}
+				return
+			}
+			if tt.wantErr {
+				t.Fatal("Process() succeeded unexpectedly")
+			}
+		})
+	}
+}
