@@ -17,7 +17,7 @@ var (
 // Processor implements Fetcher interface for receiving Telegram updates
 // and converting them into internal Event representations.
 type Processor struct {
-	client  *telegram.Client
+	client  Client
 	offset  int
 	storage storage.Storage
 }
@@ -28,8 +28,14 @@ type Meta struct {
 	UserName string
 }
 
+// Client abstracts Telegram API operations used by the bot.
+type Client interface {
+	GetUpdates(offset, limit int) ([]telegram.Update, error)
+	SendMessage(chatID int, text string) error
+}
+
 // New creates a new Processor with the given Telegram client and storage.
-func New(client *telegram.Client, storage storage.Storage) *Processor {
+func New(client Client, storage storage.Storage) *Processor {
 	return &Processor{
 		client:  client,
 		storage: storage,
