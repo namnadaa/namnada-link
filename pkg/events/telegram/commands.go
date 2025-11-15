@@ -167,12 +167,12 @@ func (p *Processor) sendList(username string, chatID int) error {
 	}
 
 	var builder strings.Builder
-	builder.WriteString("Your saved pages:\n\n")
+	builder.WriteString("Your saved articles:\n\n")
 
 	for i, page := range pages {
-		status := "[ ]"
+		status := ""
 		if page.Read {
-			status = "[x]"
+			status = "(Read)"
 		}
 		fmt.Fprintf(&builder, "%d. %s %s\n", i+1, status, page.URL)
 	}

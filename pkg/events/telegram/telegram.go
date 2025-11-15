@@ -51,7 +51,7 @@ func (p *Processor) Fetch(limit int) ([]events.Event, error) {
 	}
 
 	if len(updates) == 0 {
-		slog.Warn("Fetch: there are no new updates")
+		slog.Debug("Fetch: there are no new updates")
 		return nil, nil
 	}
 

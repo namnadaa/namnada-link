@@ -1,26 +1,36 @@
 package telegram
 
-const msgHelp = `I can save links to pages for you and help you manage them.
+const msgHello = `🪩 Welcome to NAMNADA LINK - your personal reading list assistant!
 
-Here’s what I can do:
+Just send me a link - I'll save it.
 
-/start — show welcome message
-/random — send you random unread pages
-/read — mark page as read
-/remove — delete page
-/list — show all saved pages
-/help — show this help message
+When you're ready to read:
+🕹️ Use /random to get a surprise link  
+🕹️ Use /list to view everything saved
 
-You can also just send me a link, and I'll save it for you automatically.`
+You can also manage your links 🔗
 
-const msgHello = "Hi there! \n\n" + msgHelp
+🔎To view detailed information use /help
+
+Happy reading! 📬`
+
+const msgHelp = `🧿 NAMNADA LINK can help you save and manage links to read later.
+Here’s what you can do:
+
+/random - Get a random unread article  
+/read - Mark an article as read  
+/remove - Delete an article  
+/list - Show all saved articles  
+/help - Show this help message
+
+Just send me any link, and I’ll save it automatically! 💾`
 
 const (
-	msgSaved          = "Saved!"
-	msgNoSavedPages   = "You have no saved pages"
-	msgAlreadyExists  = "You already have this page in your list"
-	msgMarkedAsRead   = "Marked as read!"
-	msgRemoved        = "Page removed!"
-	msgUnknownCommand = "Unknown command"
-	msgURLRequired    = "Please provide a URL"
+	msgSaved          = "💾 Saved to your reading list!"
+	msgNoSavedPages   = "🕰️ You have no saved pages yet.\nJust send me a link to get started!"
+	msgAlreadyExists  = "📰 This page is already in your list"
+	msgMarkedAsRead   = "🧮 Marked as read!"
+	msgRemoved        = "🗑️ Page removed!"
+	msgUnknownCommand = "🥡 I didn't understand that command.\nTry /help to see what I can do!"
+	msgURLRequired    = "🔗 Please provide a valid URL"
 )
